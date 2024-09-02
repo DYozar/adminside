@@ -10,7 +10,7 @@ import {
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: "https://4000-monospace-serverside-1715861733491.cluster-y34ecccqenfhcuavp7vbnxv7zk.cloudworkstations.dev/",
+    uri: "https://hintlr.loca.lt",
     fetchOptions: { cache: "no-store" },
   });
 
