@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'; // Import both icons
