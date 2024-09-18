@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import QuillEditor from '../Editor/Index'; // Import EditorComponent
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import dynamic from 'next/dynamic';
 
+const QuillEditor = dynamic(() => import('../Editor/Index'), {
+  ssr: false,  // Disable server-side rendering for this component
+});
 const UPDATE_POST = gql`
   mutation UpdatePost($id: ID!, $title: String, $content: String, $imgUrl: String, $slug: String, $categories: [CategoryInput], $subCategories: [SubCategoryInput]) {
     updatePost(id: $id, title: $title, content: $content, slug: $slug, imgUrl: $imgUrl, categories: $categories, subCategories: $subCategories) {

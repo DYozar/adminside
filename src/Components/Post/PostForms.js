@@ -2,8 +2,11 @@
 import React, { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid';
-import QuillEditor from '../Editor/Index'; // Import EditorComponent
+import dynamic from 'next/dynamic';
 
+const QuillEditor = dynamic(() => import('../Editor/Index'), {
+  ssr: false,  // Disable server-side rendering for this component
+});
 const CREATE_POST = gql`
   mutation CreatePost(
     $subCategories: [SubCategoryInput],  
