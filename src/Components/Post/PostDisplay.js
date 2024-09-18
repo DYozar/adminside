@@ -1,3 +1,5 @@
+import parse from 'html-react-parser';
+
 import React, { useState } from 'react';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'; // Import icons
 import UpdatePostForm from './UpdatePostForm';
@@ -109,7 +111,7 @@ const PostDisplay = ({ posts, Cat  ,Sub}) => {
         />
         <h2 className="text-lg font-semibold text-gray-900">{post.title}</h2>
       </div>
-      <p className="text-sm text-gray-600">{post.content}</p>
+      {/* <p className="text-sm text-gray-600">{parse(post.content)}</p> */}
       {subcategories.map((subcategory, index) => (
           <p key={index} className="text-sm text-gray-600">{subcategory.title}</p>
         ))}

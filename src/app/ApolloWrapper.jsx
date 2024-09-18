@@ -7,13 +7,13 @@ import {
   NextSSRApolloClient,
   SSRMultipartLink,
 } from "@apollo/experimental-nextjs-app-support/ssr";
+import  createUploadLink  from 'apollo-upload-client/createUploadLink.mjs';
 
 function makeClient() {
-  const httpLink = new HttpLink({
-    uri: "https://hintlr.loca.lt",
-    fetchOptions: { cache: "no-store" },
+  const httpLink = createUploadLink({
+    uri: "https://serverside-production-41e2.up.railway.app/", // Replace with your GraphQL endpoint
   });
-
+  
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache(),
     link:

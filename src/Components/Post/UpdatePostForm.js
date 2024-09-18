@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { XMarkIcon } from '@heroicons/react/24/solid';
+import QuillEditor from '../Editor/Index'; // Import EditorComponent
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const UPDATE_POST = gql`
   mutation UpdatePost($id: ID!, $title: String, $content: String, $imgUrl: String, $slug: String, $categories: [CategoryInput], $subCategories: [SubCategoryInput]) {
@@ -83,20 +86,27 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
     setSelectedSubCategories(post.SubCategories ? post.SubCategories.map(c => c.id) : []);
   }, [post]);
 
+  const handleContentChange = (value) => {
+    setPostInput({
+      ...postInput,
+      content: value,
+    });
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPostInput(prevState => ({
-      ...prevState,
+    setPostInput({
+      ...postInput,
       [name]: value,
-    }));
+    });
   };
 
-  const handleCategoryChange = (e) => {
-    const selectedOptions = Array.from(e.target.options)
-      .filter(option => option.selected)
-      .map(option => option.value);
-    setSelectedCategories(selectedOptions);
-  };
+
+  // const handleCategoryChange = (e) => {
+  //   const selectedOptions = Array.from(e.target.options)
+  //     .filter(option => option.selected)
+  //     .map(option => option.value);
+  //   setSelectedCategories(selectedOptions);
+  // };
 
   const handleSubCategoryChange = (e) => {
     const selectedOptions = Array.from(e.target.options)
@@ -152,25 +162,12 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
             value={postInput.title}
             onChange={handleInputChange}
             placeholder="Enter post title"
-            required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
-        <div>
-          <label htmlFor="content" className="block text-sm font-medium text-gray-700">
-            Content
-          </label>
-          <textarea
-            id="content"
-            name="content"
-            value={postInput.content}
-            onChange={handleInputChange}
-            placeholder="Enter post content"
-            required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          />
-        </div>
-        <div>
+        <QuillEditor value={postInput.content} onChange={handleContentChange} />
+
+        {/* <div>
           <label htmlFor="slug" className="block text-sm font-medium text-gray-700">
             Slug
           </label>
@@ -181,10 +178,9 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
             value={postInput.slug}
             onChange={handleInputChange}
             placeholder="Enter post slug"
-            required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
-        </div>
+        </div> */}
         <div>
           <label htmlFor="imgUrl" className="block text-sm font-medium text-gray-700">
             Image URL
@@ -196,7 +192,6 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
             value={postInput.imgUrl}
             onChange={handleInputChange}
             placeholder="Enter image URL"
-            required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
@@ -225,6 +220,7 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
           <select
             id="subCategories"
             multiple
+            required
             onChange={handleSubCategoryChange}
             value={selectedSubCategories}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"

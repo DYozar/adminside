@@ -46,7 +46,6 @@ const GET_POSTS = gql`
       id
       title
       content
-      imgUrl
       slug
       Categories {
         id
@@ -63,19 +62,34 @@ const GET_POSTS = gql`
 `;
 
 const Page = () => {
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedCat, setSelectedCat] = useState(null);
+
   const { loading: catLoading, error: catError, data: catData } = useQuery(GET_CATEGORIES);
   const { loading: postLoading, error: postError, data: postData } = useQuery(GET_POSTS);
   const { loading: subLoading, error: subError, data: subData } = useQuery(GET_SUBCATEGORIES);
- 
 
-  if (catLoading || postLoading || subLoading) return <p>Loading...</p>;
+  // Handle loading state for each query
+  if (catLoading || postLoading || subLoading) {
+    return (
+      <div>
+        {catLoading && <p>Loading categories...</p>}
+        {postLoading && <p>Loading posts...</p>}
+        {subLoading && <p>Loading subcategories...</p>}
+      </div>
+    );
+  }
+
+  // Handle errors for each query
   if (catError) return <p>Error loading categories: {catError.message}</p>;
   if (postError) return <p>Error loading posts: {postError.message}</p>;
   if (subError) return <p>Error loading subcategories: {subError.message}</p>;
+
+  // Ensure data is available before rendering
   if (!catData || !postData || !subData) return <p>No data available</p>;
 
   const handleSelectPost = (post) => {
-    setSelectedPost((prevSelectedPost) => 
+    setSelectedPost((prevSelectedPost) =>
       prevSelectedPost && prevSelectedPost.id === post.id ? null : post
     );
   };
@@ -84,32 +98,62 @@ const Page = () => {
     setSelectedCat(cat);
   };
 
-
   return (
-    <div className='grid grid-cols-2 gap-4 mt-4 '>
-      <div className=''>
-        <PostForms categories={catData.Categories} SubCategories={subData.SubCategories} />
-      </div>
-      <div className=''>
-        <PostDisplay posts={postData.Posts} Cat={catData.Categories} onSelectPost={handleSelectPost} Sub={subData.SubCategories} />
-      </div>
-
-      <div className=''>
-        <CategoryForms  SubCats={subData.SubCategories} />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      {/* Post form section */}
+      <div>
+        {catData && subData && (
+          <PostForms categories={catData.Categories} SubCategories={subData.SubCategories} />
+        )}
       </div>
 
-      <div className=''>
-        <CatDisplay categories={catData.Categories}  onSelectCat={handleSelectCat} SubCat={subData.SubCategories} />
+      {/* Post display section */}
+      <div>
+        {postData && catData && subData && (
+          <PostDisplay
+            posts={postData.Posts}
+            Cat={catData.Categories}
+            onSelectPost={handleSelectPost}
+            Sub={subData.SubCategories}
+          />
+        )}
       </div>
 
-      <div className=''>
-        <SubCategoryForms  Cats={catData.Categories} />
+      {/* Category form section */}
+      <div>
+        {subData && (
+          <CategoryForms SubCats={subData.SubCategories} />
+        )}
       </div>
 
-      <div className=''>
-       <SubCatDisplay SubCat={subData.SubCategories} Cat={catData.Categories}  onSelectCat={handleSelectCat} />
+      {/* Category display section */}
+      <div>
+        {catData && subData && (
+          <CatDisplay
+            categories={catData.Categories}
+            onSelectCat={handleSelectCat}
+            SubCat={subData.SubCategories}
+          />
+        )}
       </div>
 
+      {/* Subcategory form section */}
+      <div>
+        {catData && (
+          <SubCategoryForms Cats={catData.Categories} />
+        )}
+      </div>
+
+      {/* Subcategory display section */}
+      <div>
+        {subData && catData && (
+          <SubCatDisplay
+            SubCat={subData.SubCategories}
+            Cat={catData.Categories}
+            onSelectCat={handleSelectCat}
+          />
+        )}
+      </div>
     </div>
   );
 };
