@@ -7,14 +7,17 @@ import dynamic from 'next/dynamic';
 const QuillEditor = dynamic(() => import('../Editor/Index'), {
   ssr: false,  // Disable server-side rendering for this component
 });
+
+
+
 const UPDATE_POST = gql`
-  mutation UpdatePost($id: ID!, $title: String, $content: String, $imgUrl: String, $slug: String, $categories: [CategoryInput], $subCategories: [SubCategoryInput]) {
-    updatePost(id: $id, title: $title, content: $content, slug: $slug, imgUrl: $imgUrl, categories: $categories, subCategories: $subCategories) {
+  mutation UpdatePost($id: ID!, $title: String, $content: String,  $slug: String, $categories: [CategoryInput], $subCategories: [SubCategoryInput]) {
+    updatePost(id: $id, title: $title, content: $content, slug: $slug, categories: $categories, subCategories: $subCategories) {
       id
       title
       content
       slug
-      imgUrl
+      
       Categories {
         id
         title
@@ -35,7 +38,6 @@ const GET_POSTS = gql`
       id
       title
       content
-      imgUrl
       Categories {
         id
         title
@@ -66,7 +68,6 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
     title: post.title || '',
     content: post.content || '',
     slug: post.slug || '',
-    imgUrl: post.imgUrl || '',
     categories: post.Categories ? post.Categories.map(c => c.id) : [],
     subCategories: post.SubCategories ? post.SubCategories.map(c => c.id) : [],
   });
@@ -80,7 +81,6 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
       title: post.title || '',
       content: post.content || '',
       slug: post.slug || '',
-      imgUrl: post.imgUrl || '',
       categories: post.Categories ? post.Categories.map(c => c.id) : [],
       subCategories: post.SubCategories ? post.SubCategories.map(c => c.id) : [],
     });
@@ -128,7 +128,6 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
       title: postInput.title,
       content: postInput.content,
       slug: postInput.slug,
-      imgUrl: postInput.imgUrl,
       categories: categoriesInput,
       subCategories: subCategoriesInput,
     };
@@ -183,20 +182,7 @@ const UpdatePostForm = ({ post, categories = [], SubCategories = [], onClose }) 
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div> */}
-        <div>
-          <label htmlFor="imgUrl" className="block text-sm font-medium text-gray-700">
-            Image URL
-          </label>
-          <input
-            type="text"
-            id="imgUrl"
-            name="imgUrl"
-            value={postInput.imgUrl}
-            onChange={handleInputChange}
-            placeholder="Enter image URL"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          />
-        </div>
+       
         {/* <div>
           <label htmlFor="categories" className="block text-sm font-medium text-gray-700">
             Categories

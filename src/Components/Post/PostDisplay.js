@@ -3,9 +3,11 @@ import parse from 'html-react-parser';
 
 import React, { useState } from 'react';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'; // Import icons
-import UpdatePostForm from './UpdatePostForm';
-import DeletePostsButton from './DeletePostsButton';
+
 import { gql, useMutation } from '@apollo/client';
+import dynamic from 'next/dynamic';
+const UpdatePostForm = dynamic(() => import('./UpdatePostForm'), { ssr: false });
+const DeletePostsButton = dynamic(() => import('./DeletePostsButton'), { ssr: false });
 
 // Define GraphQL mutations
 const UPDATE_POST = gql`

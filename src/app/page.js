@@ -68,7 +68,7 @@ const Page = () => {
   const { loading: postLoading, error: postError, data: postData } = useQuery(GET_POSTS);
   const { loading: subLoading, error: subError, data: subData } = useQuery(GET_SUBCATEGORIES);
 
-  if (catLoading || postLoading || subLoading) return <p>Loading...</p>;
+  if (catLoading || postLoading || subLoading) return <p className=' text-center '>Loading...</p>;
   if (catError) return <p>Error loading categories: {catError.message}</p>;
   if (postError) return <p>Error loading posts: {postError.message}</p>;
   if (subError) return <p>Error loading subcategories: {subError.message}</p>;

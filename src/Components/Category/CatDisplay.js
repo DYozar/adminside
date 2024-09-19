@@ -1,9 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'; // Import icons
-import UpdateCategory from './UpdateCategory';
-import DeleteCatButton from './DeleteCatButton';
 import { gql, useMutation } from '@apollo/client';
+import dynamic from 'next/dynamic';
+const UpdateCategory = dynamic(() => import('./UpdateCategory'), { ssr: false });
+const DeleteCatButton = dynamic(() => import('./DeleteCatButton'), { ssr: false });
 
 // Define GraphQL mutations
 const UPDATE_CAT = gql`

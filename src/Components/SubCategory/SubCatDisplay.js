@@ -1,10 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'; // Import icons
-import UpdateSubCategory from './UpdateSubCategory';
-import DeleteSubCatButton from './DeleteSubCatButton';
 import { gql, useMutation } from '@apollo/client';
-
+import dynamic from 'next/dynamic';
+const UpdateSubCategory = dynamic(() => import('./UpdateSubCategory'), { ssr: false });
+const DeleteSubCatButton = dynamic(() => import('./DeleteSubCatButton'), { ssr: false });
 // Define GraphQL mutations
 const UPDATE_CAT = gql`
   mutation UpdatSubCategory($updatSubCategoryId: ID!, $title: String, $sSlug: String, $categories: [CategoryInput]) {
