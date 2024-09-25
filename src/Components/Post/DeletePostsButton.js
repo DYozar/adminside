@@ -1,8 +1,7 @@
-'use client'
 import { useMutation, useQuery } from '@apollo/client';
 import { gql } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
-import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'; // Import icons
+import { XMarkIcon, PlusIcon } from '@heroicons/react/24/solid';
 
 const GET_POSTS = gql`
   query Query {
@@ -24,22 +23,19 @@ const DELETE_POSTS = gql`
   }
 `;
 
-const PostsButton = ({ postIds, onDeleteComplete ,onSelectPost }) => {
+const PostsButton = ({ postIds, onDeleteComplete }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showButton, setShowButton] = useState(false);
-  const [postsToDelete, setPostsToDelete] = useState([]);
 
-  // Fetch the current posts
   const { data, loading: queryLoading, error: queryError } = useQuery(GET_POSTS, {
-    fetchPolicy: 'cache-and-network', // Ensure the cache is up-to-date
+    fetchPolicy: 'cache-and-network',
   });
 
   useEffect(() => {
     if (data && data.Posts) {
       const posts = data.Posts.filter(post => postIds.includes(post.id));
-      setPostsToDelete(posts);
-      setShowButton(postIds && postIds.length > 0 && posts.length > 0);
+      setShowButton(postIds.length > 0 && posts.length > 0);
     }
     if (queryError) {
       console.error('Error fetching posts:', queryError.message);
@@ -68,7 +64,6 @@ const PostsButton = ({ postIds, onDeleteComplete ,onSelectPost }) => {
     },
     onCompleted: () => {
       setError(null);
-      // Callback to inform parent component about completion
       if (onDeleteComplete) {
         onDeleteComplete();
       }
@@ -79,13 +74,11 @@ const PostsButton = ({ postIds, onDeleteComplete ,onSelectPost }) => {
     setLoading(true);
     setError(null);
     try {
-      // Verify if all posts to delete exist
       const existingPosts = data.Posts.map(post => post.id);
       const idsToDelete = postIds.filter(id => existingPosts.includes(id));
 
       if (idsToDelete.length === 0) {
         setError('No valid posts selected for deletion.');
-        setLoading(false);
         return;
       }
 
@@ -97,15 +90,12 @@ const PostsButton = ({ postIds, onDeleteComplete ,onSelectPost }) => {
       setLoading(false);
     }
   };
-  const handleSelectPost = (post) => {
-    onSelectPost(post);
-  };
 
   return (
-    <div className="">
+    <div>
       {showButton && (
         <button
-          onClick={()=>{handleDelete(); postsToDelete.forEach(post => handleSelectPost(post));}}
+          onClick={handleDelete}
           disabled={loading}
           className={`mt-4 px-4 py-2 rounded-lg font-semibold text-white ${
             loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-700'
@@ -114,9 +104,7 @@ const PostsButton = ({ postIds, onDeleteComplete ,onSelectPost }) => {
           {loading ? 'Deleting...' : 'Delete Selected Post'}
         </button>
       )}
-      {error && (
-        <p className="mt-2 text-red-500 font-medium">{error}</p>
-      )}
+      {error && <p className="mt-2 text-red-500 font-medium">{error}</p>}
     </div>
   );
 };

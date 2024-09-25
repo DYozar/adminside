@@ -5,6 +5,7 @@ import { gql, useMutation } from '@apollo/client';
 import dynamic from 'next/dynamic';
 const UpdateSubCategory = dynamic(() => import('./UpdateSubCategory'), { ssr: false });
 const DeleteSubCatButton = dynamic(() => import('./DeleteSubCatButton'), { ssr: false });
+
 // Define GraphQL mutations
 const UPDATE_CAT = gql`
   mutation UpdatSubCategory($updatSubCategoryId: ID!, $title: String, $sSlug: String, $categories: [CategoryInput]) {
@@ -17,16 +18,16 @@ const UPDATE_CAT = gql`
 `;
 
 const DELETE_CATS = gql`
-mutation DeletSubCategory($ids: [ID!]!) {
-  deletSubCategory(ids: $ids) {
-    id
-    sSlug
-    title
+  mutation DeletSubCategory($ids: [ID!]!) {
+    deletSubCategory(ids: $ids) {
+      id
+      sSlug
+      title
+    }
   }
-}
 `;
 
-const CatDisplay = ({ SubCat, onSelectedSubCatIdsChange = () => {}, onSelectCat ,Cat }) => {
+const SubCatDisplay = ({ SubCat, onSelectedSubCatIdsChange = () => {}, onSelectCat, Cat }) => {
   const [isVisible, setIsVisible] = useState(false); // State to manage visibility
   const [selectedSubCategory, setSelectedSubCategory] = useState(null); // Manage currently selected category
   const [showUpdateForm, setShowUpdateForm] = useState(false); // Show update form
@@ -72,7 +73,6 @@ const CatDisplay = ({ SubCat, onSelectedSubCatIdsChange = () => {}, onSelectCat 
         },
       });
       handleCloseUpdateForm();
-      // Optionally, refetch categories or update local state to reflect the change
     } catch (error) {
       console.error('Error updating category:', error);
     }
@@ -102,48 +102,48 @@ const CatDisplay = ({ SubCat, onSelectedSubCatIdsChange = () => {}, onSelectCat 
           onClick={() => handleSelectCategory(sub)}
         />
         <h2 className="text-lg font-semibold text-gray-900">{sub.title}</h2>
+        <button
+          onClick={() => {
+            setSelectedSubCategory(sub);
+            setShowUpdateForm(true);
+          }}
+          className="ml-2 py-1 px-2 border border-transparent rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Update
+        </button>
       </div>
       <p className="text-sm text-gray-600">{sub.cSlug}</p>
     </div>
   ));
 
   return (
-    <div className="relative  w-1/2 mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div className="relative w-1/2 mx-auto p-6 bg-white shadow-md rounded-lg">
       {isVisible ? (
         <>
-         
-         <div className="fixed inset-0 z-10 h-full w-full p-6 bg-white shadow-md rounded-lg overflow-y-auto">
+          <div className="fixed inset-0 z-10 h-full w-full p-6 bg-white shadow-md rounded-lg overflow-y-auto">
             {renderedSubCategories}
-            
             <button
               onClick={() => setIsVisible(false)} // Hide component
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
-            
-            
-            {SubCat.length > 0 && selectedSubCategory &&(
-            <div className="flex space-x-4">
-              <button
-                onClick={handleUpdateClick}
-                className='py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-              >
-                Update SubCategory
-              </button>
-              <DeleteSubCatButton CatIds={selectedSubCatIds}  onDeleteComplete={handleDeleteSubCategories}  onSelectCategory={handleSelectCategory}/>
-            </div>
-          )}
-          {showUpdateForm && selectedSubCategory && (
-            <UpdateSubCategory
-              SubCat={selectedSubCategory}
-              categories={Cat}
-              onClose={handleCloseUpdateForm}
-              onUpdateSubCategory={handleUpdateSubCategory}
-            />
-          )}
-            </div>
-         
+            {selectedSubCatIds.length > 0 && (
+              <DeleteSubCatButton 
+                CatIds={selectedSubCatIds} 
+                onDeleteComplete={handleDeleteSubCategories} 
+                onSelectCategory={handleSelectCategory} 
+              />
+            )}
+            {showUpdateForm && selectedSubCategory && (
+              <UpdateSubCategory
+                SubCat={selectedSubCategory}
+                categories={Cat}
+                onClose={handleCloseUpdateForm}
+                onUpdateSubCategory={handleUpdateSubCategory}
+              />
+            )}
+          </div>
         </>
       ) : (
         <button
@@ -157,4 +157,4 @@ const CatDisplay = ({ SubCat, onSelectedSubCatIdsChange = () => {}, onSelectCat 
   );
 };
 
-export default CatDisplay;
+export default SubCatDisplay;

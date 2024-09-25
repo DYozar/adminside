@@ -11,6 +11,8 @@ const SubCategoryForms = dynamic(() => import('../Components/SubCategory/SubCate
 const PostDisplay = dynamic(() => import('../Components/Post/PostDisplay'), { ssr: false });
 const CatDisplay = dynamic(() => import('../Components/Category/CatDisplay'), { ssr: false });
 const SubCatDisplay = dynamic(() => import('../Components/SubCategory/SubCatDisplay'), { ssr: false });
+const CreateItems = dynamic(() => import('../Components/Items/CreateItems'), { ssr: false });
+const DisplayItems = dynamic(() => import('../Components/Items/DisplayItems'), { ssr: false });
 
 const GET_CATEGORIES = gql`
   query GetCategories {
@@ -42,23 +44,62 @@ const GET_SUBCATEGORIES = gql`
   }
 `;
 
+
+const GET_ITEMS = gql`
+  query GetItem {
+   Items {
+    id
+    name
+    description
+    price
+    content
+    media {
+      url
+    }
+    links {
+      name
+      url
+    }
+  }
+  }
+`;
+
+
+
 const GET_POSTS = gql`
   query Query {
     Posts {
       id
       title
       content
-      slug
-      Categories {
-        id
-        title
-        cSlug
+      image {
+        url
       }
-      SubCategories {
+      items {
         id
-        title
-        sSlug
+        name
+        description
+        price
+        content
+        media{
+        url
+        }
+        links {
+          name
+          url
+        }
+       
       }
+         Categories {
+          id
+          title
+          cSlug
+        }
+        SubCategories {
+          id
+          title
+          sSlug
+        }
     }
   }
 `;
@@ -67,12 +108,14 @@ const Page = () => {
   const { loading: catLoading, error: catError, data: catData } = useQuery(GET_CATEGORIES);
   const { loading: postLoading, error: postError, data: postData } = useQuery(GET_POSTS);
   const { loading: subLoading, error: subError, data: subData } = useQuery(GET_SUBCATEGORIES);
+  const { loading: ItemLoading, error: ItemError, data: ItemData } = useQuery(GET_ITEMS);
 
-  if (catLoading || postLoading || subLoading) return <p className=' text-center '>Loading...</p>;
+  if (catLoading || postLoading || subLoading || ItemLoading) return <p className=' text-center '>Loading...</p>;
   if (catError) return <p>Error loading categories: {catError.message}</p>;
   if (postError) return <p>Error loading posts: {postError.message}</p>;
   if (subError) return <p>Error loading subcategories: {subError.message}</p>;
-  if (!catData || !postData || !subData) return <p>No data available</p>;
+  if (ItemError) return <p>Error loading ItemData: {ItemError.message}</p>;
+  if (!catData || !postData || !subData ||!ItemData) return <p>No data available</p>;
 
   const handleSelectPost = (post) => {
     setSelectedPost((prevSelectedPost) =>
@@ -87,14 +130,14 @@ const Page = () => {
   return (
     <div className='grid grid-cols-2 gap-4 mt-4'>
       <div className=''>
-        <PostForms categories={catData.Categories} SubCategories={subData.SubCategories} />
+        <PostForms categories={catData.Categories} SubCategories={subData.SubCategories} item={ItemData.Items}/>
       </div>
       <div className=''>
-        <PostDisplay posts={postData.Posts} Cat={catData.Categories} onSelectPost={handleSelectPost} Sub={subData.SubCategories} />
+        <PostDisplay posts={postData.Posts} Cat={catData.Categories} onSelectPost={handleSelectPost} Sub={subData.SubCategories} item={ItemData.Items} />
       </div>
 
       <div className=''>
-        <CategoryForms SubCats={subData.SubCategories} />
+        <CategoryForms SubCats={subData.SubCategories}  />
       </div>
 
       <div className=''>
@@ -108,7 +151,16 @@ const Page = () => {
       <div className=''>
         <SubCatDisplay SubCat={subData.SubCategories} Cat={catData.Categories} onSelectCat={handleSelectCat} />
       </div>
+      <div className=''>
+        <CreateItems item={ItemData.Items} />
+      </div>
+
+      <div className=''>
+        <DisplayItems  item={ItemData.Items}  onSelectCat={handleSelectCat} />
+      </div>
     </div>
+
+
   );
 };
 

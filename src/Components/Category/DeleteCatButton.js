@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useMutation, useQuery } from '@apollo/client';
 import { gql } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
@@ -23,29 +23,28 @@ const DELETE_Cat = gql`
   }
 `;
 
-const DeleteCatButton = ({ CatIds, onDeleteComplete ,onSelectCategory }) => {
+const DeleteCatButton = ({ CatIds = [], onDeleteComplete, onSelectCategory }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showButton, setShowButton] = useState(false);
-  const [CatsToDelete, setCatssToDelete] = useState([]);
+  const [CatsToDelete, setCatsToDelete] = useState([]);
 
   // Fetch the current categories
   const { data, loading: queryLoading, error: queryError } = useQuery(GET_Cat, {
-    fetchPolicy: 'cache-and-network', // Ensure the cache is up-to-date
+    fetchPolicy: 'cache-and-network',
   });
 
   useEffect(() => {
-    // Set button visibility based on selected categories and available categories
-    if (data && data.Categories ) {
-      const cats = data.Categories.filter(cat => CatIds.includes(cat.id));
-      setShowButton(CatIds && CatIds.length > 0 && cats.length > 0);
-      setCatssToDelete(cats);
+    if (data && data.Categories) {
+      // Find categories that match the selected CatIds
+      const cats = data.Categories.filter(cat => Array.isArray(CatIds) && CatIds.includes(cat.id));
+      setShowButton(Array.isArray(CatIds) && CatIds.length > 0 && cats.length > 0);
+      setCatsToDelete(cats);
     }
     if (queryError) {
       console.error('Error fetching categories:', queryError.message);
     }
   }, [data, queryError, CatIds]);
-
 
   const [deleteCats] = useMutation(DELETE_Cat, {
     update(cache, { data: { deletCategory } }) {
@@ -69,19 +68,16 @@ const DeleteCatButton = ({ CatIds, onDeleteComplete ,onSelectCategory }) => {
     },
     onCompleted: () => {
       setError(null);
-      // Callback to inform parent component about completion
       if (onDeleteComplete) {
         onDeleteComplete();
       }
     },
   });
 
-
   const handleDelete = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Verify if all categories to delete exist
       const existingCategories = data.Categories.map(category => category.id);
       const idsToDelete = CatIds.filter(id => existingCategories.includes(id));
 
@@ -99,6 +95,7 @@ const DeleteCatButton = ({ CatIds, onDeleteComplete ,onSelectCategory }) => {
       setLoading(false);
     }
   };
+
   const handleSelectCat = (cat) => {
     onSelectCategory(cat);
   };
@@ -107,11 +104,9 @@ const DeleteCatButton = ({ CatIds, onDeleteComplete ,onSelectCategory }) => {
     <div className="flex flex-col items-center">
       {showButton && (
         <button
-        onClick={()=>{handleDelete();CatsToDelete.forEach(cat => handleSelectCat(cat));}}
+          onClick={() => { handleDelete(); CatsToDelete.forEach(cat => handleSelectCat(cat)); }}
           disabled={loading}
-          className={`mt-4 px-4 py-2 rounded-lg font-semibold text-white ${
-            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-700'
-          }`}
+          className={`mt-4 px-4 py-2 rounded-lg font-semibold text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-700'}`}
         >
           {loading ? 'Deleting...' : 'Delete Selected Cat'}
         </button>
