@@ -155,7 +155,13 @@ const UpdateCatForm = ({ category, subcategories = [], onClose }) => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
             {subcategories.map(subcategory => (
-              <option key={subcategory.id} value={subcategory.id}>
+              <option key={subcategory.id} value={subcategory.id}
+              className={`${
+                categoryInput.subcategories.includes(subcategory.id)
+                  ? 'bg-black text-white'
+                  : 'bg-white text-black'
+              }`}
+              >
                 {subcategory.title}
               </option>
             ))}

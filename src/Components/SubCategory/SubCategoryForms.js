@@ -11,8 +11,6 @@ mutation Mutation($title: String!, $sSlug: String!, $categories: [CategoryInput]
     sSlug
     Categories {
       cSlug
-      title
-      id
     }
   }
 }
@@ -74,11 +72,13 @@ function SubCategoryForms({ Cats }) {
     });
   };
 
-  const HandleSubCatChange = (e) => {
+  const HandleCatChange = (e) => {
     const { options } = e.target;
     const selectedOptions = Array.from(options)
       .filter((o) => o.selected)
       .map((o) => o.value);
+  
+    console.log('Selected categories:', selectedOptions);  // Log to check selected categories
     setSelectedCategories(selectedOptions);
   };
 
@@ -86,19 +86,20 @@ function SubCategoryForms({ Cats }) {
     e.preventDefault();
 
     if (!Array.isArray(Cats) || !Array.isArray(selectedCategories)) {
-      console.error('subCategories or selectedCategories is not an array.');
+      console.error('Categories or selectedCategories is not an array.');
       return;
     }
 
     const CategoriesInput = selectedCategories.map((CategoryId) => {
-      const Category = Cats.find((subCat) => subCat.id === CategoryId);
-      return { title: Category.title, cSlug: Category.cSlug };
+      const Category = Cats.find((Cat) => Cat.id === CategoryId);
+      return { cSlug: Category?.cSlug };  // Only return cSlug, like your working mutation
     });
 
+    
     const variables = {
       title: Category.title,
       sSlug: Category.sSlug,
-      Categories: CategoriesInput,
+      categories: CategoriesInput,
     };
 
     try {
@@ -107,10 +108,8 @@ function SubCategoryForms({ Cats }) {
       alert('Category created successfully');
       setCategory({
         title: '',
-        cSlug: '',
-        SubCategories: [],
+        sSlug: '',
       });
-      setSelectedCategories([]);
       // Do not hide form automatically after creation
     } catch (error) {
       console.error('Error creating Category:', error.message);
@@ -151,7 +150,7 @@ function SubCategoryForms({ Cats }) {
             </div>
             <div>
               <label htmlFor="sSlug" className="block  text-sm font-medium text-gray-700">
-                Category Slug
+                SubCategory Slug
               </label>
               <input
                 type="text"
@@ -160,24 +159,23 @@ function SubCategoryForms({ Cats }) {
                 value={Category.sSlug}
                 onChange={HandleInputChange}
                 placeholder="Enter Subcategory slug"
-                required
                 className="mt-1 block text-black w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
             <div>
               <label htmlFor="Categories" className=" block text-sm font-medium text-gray-700">
-                Subcategories
+                Categories
               </label>
               <select
-                id="subCategories"
-                multiple
-                onChange={HandleSubCatChange}
+                id="Categories"
+                onChange={HandleCatChange}
                 value={selectedCategories}
-                className="mt-1 text-black block w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="mt-1 text-black block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               >
-                {Cats.map((subCategory) => (
-                  <option key={subCategory.id} value={subCategory.id}>
-                    {subCategory.title}
+                 <option value="" disabled>Please select</option>
+                {Cats.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
                   </option>
                 ))}
               </select>
