@@ -11,7 +11,7 @@ import  createUploadLink  from 'apollo-upload-client/createUploadLink.mjs';
 
 function makeClient() {
   const httpLink = createUploadLink({
-    uri: "http://localhost:4000/", // Replace with your GraphQL endpoint
+    uri: "https://api.nuttynook.com/", // Replace with your GraphQL endpoint
   });
   
   return new NextSSRApolloClient({
