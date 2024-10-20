@@ -29,6 +29,18 @@ const GET_CATEGORIES = gql`
   }
 `;
 
+
+const GET_GENRE= gql`
+  query Query {
+  
+  genres{
+    id
+    genre
+    title
+  }
+}
+`;
+
 const GET_SUBCATEGORIES = gql`
   query GetSubCategories {
     SubCategories {
@@ -53,6 +65,18 @@ const GET_ITEMS = gql`
     description
     price
     content
+     slug
+     date
+  genres{
+    id
+    genre
+    title
+  }
+    SubCategories {
+        id
+        title
+        sSlug
+      }
     media {
       url
     }
@@ -81,6 +105,10 @@ const GET_POSTS = gql`
         description
         price
         content
+        genres {
+      title
+      genre
+    }
         media{
         url
         }
@@ -109,12 +137,17 @@ const Page = () => {
   const { loading: postLoading, error: postError, data: postData } = useQuery(GET_POSTS);
   const { loading: subLoading, error: subError, data: subData } = useQuery(GET_SUBCATEGORIES);
   const { loading: ItemLoading, error: ItemError, data: ItemData } = useQuery(GET_ITEMS);
+  const { loading:GenreLoading, error:GenreError, data: GenreData } = useQuery(GET_GENRE);
 
-  if (catLoading || postLoading || subLoading || ItemLoading) return <p className=' text-center '>Loading...</p>;
+console.log('cat')
+
+
+  if (catLoading || postLoading || subLoading || GenreLoading||ItemLoading) return <p className=' text-center '>Loading...</p>;
   if (catError) return <p>Error loading categories: {catError.message}</p>;
   if (postError) return <p>Error loading posts: {postError.message}</p>;
   if (subError) return <p>Error loading subcategories: {subError.message}</p>;
   if (ItemError) return <p>Error loading ItemData: {ItemError.message}</p>;
+  if (GenreError) return <p>Error loading Genre: {GenreError.message}</p>;
   if (!catData || !postData || !subData ||!ItemData) return <p>No data available</p>;
 
   const handleSelectPost = (post) => {
@@ -152,11 +185,11 @@ const Page = () => {
         <SubCatDisplay SubCat={subData.SubCategories} Cat={catData.Categories} onSelectCat={handleSelectCat} />
       </div>
       <div className=''>
-        <CreateItems item={ItemData.Items} />
+        <CreateItems item={ItemData.Items} SubCategories={subData.SubCategories} Genre={GenreData.genres}/>
       </div>
 
       <div className=''>
-        <DisplayItems  item={ItemData.Items}  onSelectCat={handleSelectCat} />
+        <DisplayItems  item={ItemData.Items} SubCat={subData.SubCategories}  onSelectCat={handleSelectCat} GG={GenreData.genres} />
       </div>
     </div>
 
@@ -165,3 +198,5 @@ const Page = () => {
 };
 
 export default Page;
+
+

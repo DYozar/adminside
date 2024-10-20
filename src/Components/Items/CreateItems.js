@@ -15,6 +15,9 @@ const CREATE_ITEMS = gql`
     $content: String
     $links: [LinkInput!]
     $itemFile: Upload
+    $subCategories: [SubCategoryInput]
+  $genres: [genreInput]
+
   ) {
     creteItems(
       name: $name
@@ -23,10 +26,16 @@ const CREATE_ITEMS = gql`
       content: $content
       links: $links
       itemFile: $itemFile
+      subCategories: $subCategories
+    genres: $genres
+
     ) {
       content
       description
       id
+      SubCategories {
+        title
+      }
       media {
         url
       }
@@ -34,6 +43,10 @@ const CREATE_ITEMS = gql`
         name
         url
       }
+        genres {
+      title
+      genre
+    }
       name
       price
     }
@@ -48,6 +61,13 @@ const GET_ITEMS = gql`
       description
       price
       content
+      genres {
+      title
+      genre
+    }
+      SubCategories {
+        title
+      }
       media {
         url
       }
@@ -59,19 +79,22 @@ const GET_ITEMS = gql`
   }
 `;
 
-const ArticleForm = ({ item }) => {
+const ArticleForm = ({ item, SubCategories ,Genre}) => {
   const [items, setItem] = useState({
     name: "",
     content: "",
     description: "",
     price: "",
-    links: [] // Initialize items as an empty array
+    links: [], // Initialize items as an empty array
+    subCategories: []
   });
 
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [error, setError] = useState("");
   const [generalError, setGeneralError] = useState("");
   const [itemFile, setItemFiles] = useState(); // Store files for each item
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
   const [createItems] = useMutation(CREATE_ITEMS, {
     update(cache, { data: { creteItems } }) {
@@ -81,13 +104,13 @@ const ArticleForm = ({ item }) => {
           cache.writeQuery({
             query: GET_ITEMS,
             data: {
-              Items: [creteItems, ...existingItems.Items],
-            },
+              Items: [creteItems, ...existingItems.Items]
+            }
           });
         } else {
           cache.writeQuery({
             query: GET_ITEMS,
-            data: { Items: [creteItems] },
+            data: { Items: [creteItems] }
           });
         }
       } catch (e) {
@@ -95,7 +118,6 @@ const ArticleForm = ({ item }) => {
       }
     }
   });
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -116,7 +138,16 @@ const ArticleForm = ({ item }) => {
       content: value
     });
   };
-
+  const handleSubCategoryChange = (event) => {
+    const value = event.target.value; // Get the checkbox value
+    setSelectedSubCategories(
+      (prevSelected) =>
+        prevSelected.includes(value)
+          ? prevSelected.filter((id) => id !== value) // Remove if already selected
+          : [...prevSelected, value] // Add if not selected
+    );
+  };
+  
   // Handle changes to individual links (for name or URL)
   const handleItemLinkChange = (linkIndex, field, value) => {
     const updatedLinks = [...items.links];
@@ -136,14 +167,22 @@ const ArticleForm = ({ item }) => {
     updatedLinks.splice(linkIndex, 1); // Remove the link at the specified index
     setItem({ ...items, links: updatedLinks });
   };
-
+  const handleGenreChange = (event) => {
+    const value = event.target.value;
+    setSelectedGenres((prevSelected) =>
+      prevSelected.includes(value)
+        ? prevSelected.filter((id) => id !== value)
+        : [...prevSelected, value]
+    );
+  };
   const Clear = () => {
     setItem({
       name: "",
       content: "",
       description: "",
       price: "",
-      links: [] // Initialize items as an empty array
+      links: [], // Initialize items as an empty array
+      subCategories: []
     });
     setItemFiles(); // Clear item files
     setError(""); // Clear any errors
@@ -152,7 +191,16 @@ const ArticleForm = ({ item }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const genresInput = selectedGenres.map((genreId) => {
+      const genre = Genre.find((g) => g.id === genreId);
+      return { title: genre.title, genre: genre.genre }; // Assuming your Genre object structure
+    });
+    const subCategoriesInput = selectedSubCategories.map((subCategoryId) => {
+      const subCategory = SubCategories.find(
+        (subCat) => subCat.id === subCategoryId
+      );
+      return { title: subCategory.title, sSlug: subCategory.sSlug };
+    });
     try {
       await createItems({
         variables: {
@@ -161,7 +209,9 @@ const ArticleForm = ({ item }) => {
           description: items.description,
           price: items.price,
           itemFile,
-          links: items.links
+          links: items.links,
+          subCategories: subCategoriesInput,
+          genres: genresInput // Pass selected genres
         }
       });
       Clear();
@@ -227,10 +277,7 @@ const ArticleForm = ({ item }) => {
               >
                 Content
               </label>
-              <QuillEditor
-                value={items.content}
-                onChange={(value) => handleContentChange(handleContentChange)}
-              />{" "}
+              <QuillEditor value={items.content} onChange={handleContentChange} />{" "}
               {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             </div>
             <div>
@@ -286,15 +333,51 @@ const ArticleForm = ({ item }) => {
             >
               Add Link
             </button>
-
+            <div className="max-h-[200px] overflow-y-auto overscroll-x-auto">
+              <h1 className="text-black py-2">Select subcategory</h1>
+              {SubCategories.map((subCategory) => (
+                <div key={subCategory.id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`subCategory-${subCategory.id}`}
+                    value={subCategory.id}
+                    checked={selectedSubCategories.includes(subCategory.id)}
+                    onChange={handleSubCategoryChange}
+                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor={`subCategory-${subCategory.id}`}
+                    className="ml-2 block text-sm text-gray-900"
+                  >
+                    {subCategory.title}
+                  </label>
+                </div>
+              ))}
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Upload Image for Item
               </label>
-              <input name="media"  type="file" onChange={handleFileChange} />
+              <input name="media" type="file" onChange={handleFileChange} />
             </div>
           </div>
-
+          <h1 className="my-4 text-gray-700">
+                Genres
+              </h1>
+          <div className="max-h-[200px] overflow-y-auto overscroll-x-auto">
+              
+              {Genre.map((genre) => (
+                <div key={genre.id} className="flex items-center ">
+                  <input
+                    type="checkbox"
+                    value={genre.id}
+                    onChange={handleGenreChange}
+                    className="mr-2"
+                  />
+                  <span className="text-gray-700">{genre.title}</span>
+                </div>
+              ))}
+            </div>
           <button
             type="submit"
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"

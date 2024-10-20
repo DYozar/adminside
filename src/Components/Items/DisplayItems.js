@@ -19,6 +19,10 @@ const UPDATE_POST = gql`
     $price: String
     $links: [LinkInput!]
     $content: String
+    $subCategories: [SubCategoryInput]
+    $genres: [genreInput]
+    
+
   ) {
     updateItems(
       id: $updateItemsId
@@ -28,6 +32,9 @@ const UPDATE_POST = gql`
       price: $price
       links: $links
       content: $content
+    subCategories: $subCategories
+    genres: $genres
+
     ) {
       id
       price
@@ -35,10 +42,19 @@ const UPDATE_POST = gql`
       media {
         url
       }
+        SubCategories {
+        id
+        title
+        sSlug
+      }
       links {
         url
         name
       }
+         genres {
+      title
+      genre
+    }
       description
     }
   }
@@ -52,7 +68,7 @@ const DELETE_POSTS = gql`
   }
 `;
 
-const ItemsDisplay = ({  item }) => {
+const ItemsDisplay = ({  item  ,SubCat , GG}) => {
   const [isVisible, setIsVisible] = useState(false); // Manage visibility of posts
   const [showUpdateForm, setShowUpdateForm] = useState(null); // Manage currently selected post for updating
   const [selectedItemsIds, setSelectedItemsIds] = useState([]); // Manage selected post IDs
@@ -139,6 +155,8 @@ const ItemsDisplay = ({  item }) => {
             item={{ ...item, link: item.links || [] }}
             onClose={handleCloseUpdateForm}
             onUpdateItem={handleUpdateItem}
+            SubCategories={SubCat}
+            Genre={GG}
           />
         )}
       </div>

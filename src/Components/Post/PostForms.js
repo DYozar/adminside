@@ -16,7 +16,7 @@ const CREATE_POST = gql`
     $imgAuthor: String!
     $reads: Int!
     $file: Upload
-    $items: [ListItemInput!]
+    $items: [ListItemInput]
   ) {
     createPost(
       subCategories: $subCategories
@@ -34,6 +34,7 @@ const CREATE_POST = gql`
       content
       imgAuthor
       reads
+      
       Categories {
         id
         title
@@ -51,6 +52,9 @@ const CREATE_POST = gql`
         id
         name
         description
+        content
+        date
+        slug
         links {
           name
           url
@@ -89,6 +93,9 @@ const GET_POSTS = gql`
         id
         name
         description
+        content
+        date
+        slug
         links {
           name
           url
@@ -180,12 +187,21 @@ const ArticleForm = ({ categories, SubCategories, item }) => {
     );
     setPost({ ...post, items: updatedItems });
   };
+
+  const handleItemContent = (index, value) => {
+    const updatedItems = post.items.map((item, i) =>
+      i === index ? { ...item, content: value } : item
+    );
+    setPost({ ...post, items: updatedItems });
+  };
+
+  
   const addItem = () => {
     setPost({
       ...post,
       items: [
         ...post.items,
-        { name: "", description: "", price: "", links: [] }
+        { name: "", description: "", price: "",slug:"", links: [] }
       ]
     });
   };
@@ -311,7 +327,7 @@ const ArticleForm = ({ categories, SubCategories, item }) => {
       Clear();
       alert("Post created successfully");
     } catch (error) {
-      console.error("GraphQL error:", err); // Log detailed error
+      console.error("GraphQL error:", error); // Log detailed error
       if (error.networkError) {
         setGeneralError("Network error occurred. Please try again later.");
       } else if (error.graphQLErrors && error.graphQLErrors.length > 0) {
@@ -409,6 +425,17 @@ const ArticleForm = ({ categories, SubCategories, item }) => {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                 </div>
+                <div>
+            <label
+              htmlFor="content"
+              className="block text-sm font-medium text-gray-700"
+            >
+             Item {index + 1}  Content
+            </label>
+            <QuillEditor value={item.content} onChange={(value) => handleItemContent(index, value)} />
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+          </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Item {index + 1} Description
