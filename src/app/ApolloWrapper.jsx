@@ -26,7 +26,7 @@ function makeClient() {
           ])
         : httpLink,
   });
-}
+}+6
 
 export function ApolloWrapper({ children }) {
   return (

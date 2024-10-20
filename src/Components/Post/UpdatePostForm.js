@@ -185,7 +185,7 @@ const UpdatePostForm = ({
   // const addItem = () => {
   //   setPostInput({
   //     ...postInput,
-  //     items: [...postInput.items, { name: '', description: '', price: '', links: [] }], // New item structure
+  //     items: [...postInput.items, { name: '', description: '', number: '', links: [] }], // New item structure
   //   });
   // };
   // const removeItem = (index) => {
@@ -273,7 +273,7 @@ const UpdatePostForm = ({
     // const itemsInput = postInput.items.map(item => ({
     //   name: item.name,
     //   description: item.description,
-    //   price:item.price,
+    //   number:item.number,
     //   // Ensure to include only the fields defined in ListItemInput
     //   links: item.links.map(link => ({
     //     name: link.name,

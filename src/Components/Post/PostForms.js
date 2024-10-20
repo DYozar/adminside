@@ -59,7 +59,7 @@ const CREATE_POST = gql`
           name
           url
         }
-        price
+        number
         media {
           url
         }
@@ -100,7 +100,7 @@ const GET_POSTS = gql`
           name
           url
         }
-        price
+        number
         media {
           url
         }
@@ -201,7 +201,7 @@ const ArticleForm = ({ categories, SubCategories, item }) => {
       ...post,
       items: [
         ...post.items,
-        { name: "", description: "", price: "",slug:"", links: [] }
+        { name: "", description: "", number: "",slug:"", links: [] }
       ]
     });
   };
@@ -451,14 +451,14 @@ const ArticleForm = ({ categories, SubCategories, item }) => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Item {index + 1} Price
+                    Item {index + 1} number
                   </label>
                   <input
                     type="number"
-                    name="price"
-                    value={item.price}
+                    name="number"
+                    value={item.number}
                     onChange={(e) => handleItemChange(index, e)}
-                    placeholder="Enter item price"
+                    placeholder="Enter item number"
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                 </div>

@@ -16,7 +16,7 @@ const UPDATE_POST = gql`
     $name: String
     $description: String
     $itemFile: Upload
-    $price: String
+    $number: String
     $links: [LinkInput!]
     $content: String
     $subCategories: [SubCategoryInput]
@@ -29,7 +29,7 @@ const UPDATE_POST = gql`
       name: $name
       description: $description
       itemFile: $itemFile
-      price: $price
+      number: $number
       links: $links
       content: $content
     subCategories: $subCategories
@@ -37,7 +37,7 @@ const UPDATE_POST = gql`
 
     ) {
       id
-      price
+      number
       name
       media {
         url

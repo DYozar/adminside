@@ -10,7 +10,7 @@ const GET_ITEMS = gql`
     id
     name
     description
-    price
+    number
     content
     media {
       url

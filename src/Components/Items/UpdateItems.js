@@ -14,7 +14,7 @@ const UPDATE_ITEMS = gql`
     $name: String
     $description: String
     $itemFile: Upload
-    $price: String
+    $number: String
     $links: [LinkInput!]
     $content: String
     $subCategories: [SubCategoryInput]
@@ -26,7 +26,7 @@ const UPDATE_ITEMS = gql`
       name: $name
       description: $description
       itemFile: $itemFile
-      price: $price
+      number: $number
       links: $links
       content: $content
       subCategories: $subCategories
@@ -34,7 +34,7 @@ const UPDATE_ITEMS = gql`
 
     ) {
       id
-      price
+      number
       name
       media {
         url
@@ -64,7 +64,7 @@ const GET_ITEMS = gql`
       id
       name
       description
-      price
+      number
       content
       SubCategories {
         id
@@ -92,7 +92,7 @@ const ArticleForm = ({ item, onClose, SubCategories = [] , Genre }) => {
     name: item.name || "",
     content: item.content || "",
     description: item.description || "",
-    price: item.price || "",
+    number: item.number || "",
     subCategories: item.SubCategories
       ? item.SubCategories.map((c) => c.id)
       : [],
@@ -163,7 +163,7 @@ const ArticleForm = ({ item, onClose, SubCategories = [] , Genre }) => {
       name: "",
       content: "",
       description: "",
-      price: "",
+      number: "",
       links: [] // Initialize items as an empty array
     });
     setItemFiles(); // Clear item files
@@ -208,7 +208,7 @@ const ArticleForm = ({ item, onClose, SubCategories = [] , Genre }) => {
           name: items.name,
           content: items.content,
           description: items.description,
-          price: items.price,
+          number: items.number,
           itemFile,
           links: sanitizedLinks,
           subCategories: subCategoriesInput,
@@ -272,14 +272,14 @@ const ArticleForm = ({ item, onClose, SubCategories = [] , Genre }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Item Price
+              Item number
             </label>
             <input
               type="number"
-              name="price"
-              value={items.price}
+              name="number"
+              value={items.number}
               onChange={handleInputChange}
-              placeholder="Enter item price"
+              placeholder="Enter item number"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>

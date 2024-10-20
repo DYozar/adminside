@@ -11,7 +11,7 @@ const CREATE_ITEMS = gql`
   mutation CreteItems(
     $name: String
     $description: String
-    $price: String
+    $number: String
     $content: String
     $links: [LinkInput!]
     $itemFile: Upload
@@ -22,7 +22,7 @@ const CREATE_ITEMS = gql`
     creteItems(
       name: $name
       description: $description
-      price: $price
+      number: $number
       content: $content
       links: $links
       itemFile: $itemFile
@@ -48,7 +48,7 @@ const CREATE_ITEMS = gql`
       genre
     }
       name
-      price
+      number
     }
   }
 `;
@@ -59,7 +59,7 @@ const GET_ITEMS = gql`
       id
       name
       description
-      price
+      number
       content
       genres {
       title
@@ -84,7 +84,7 @@ const ArticleForm = ({ item, SubCategories ,Genre}) => {
     name: "",
     content: "",
     description: "",
-    price: "",
+    number: "",
     links: [], // Initialize items as an empty array
     subCategories: []
   });
@@ -180,7 +180,7 @@ const ArticleForm = ({ item, SubCategories ,Genre}) => {
       name: "",
       content: "",
       description: "",
-      price: "",
+      number: "",
       links: [], // Initialize items as an empty array
       subCategories: []
     });
@@ -207,7 +207,7 @@ const ArticleForm = ({ item, SubCategories ,Genre}) => {
           name: items.name,
           content: items.content,
           description: items.description,
-          price: items.price,
+          number: items.number,
           itemFile,
           links: items.links,
           subCategories: subCategoriesInput,
@@ -282,14 +282,14 @@ const ArticleForm = ({ item, SubCategories ,Genre}) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Item Price
+                Item number
               </label>
               <input
                 type="number"
-                name="price"
-                value={items.price}
+                name="number"
+                value={items.number}
                 onChange={handleInputChange}
-                placeholder="Enter item price"
+                placeholder="Enter item number"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>

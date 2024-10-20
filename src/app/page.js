@@ -63,7 +63,7 @@ const GET_ITEMS = gql`
     id
     name
     description
-    price
+    number
     content
      slug
      date
@@ -103,7 +103,7 @@ const GET_POSTS = gql`
         id
         name
         description
-        price
+        number
         content
         genres {
       title
