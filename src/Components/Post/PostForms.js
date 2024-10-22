@@ -287,10 +287,10 @@ const ArticleForm = ({ categories, SubCategories, item }) => {
       return;
     }
     // If no item selected and no item created
-    if (selectedItems.length === 0 && post.items.length === 0) {
-      setError("Please select or create at least one item.");
-      return;
-    }
+    // if (selectedItems.length === 0 && post.items.length === 0) {
+    //   setError("Please select or create at least one item.");
+    //   return;
+    // }
 
     // Map newly created items and attach files
     const itemsInput = post.items.map((item, index) => ({
